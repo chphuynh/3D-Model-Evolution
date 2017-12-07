@@ -1,10 +1,21 @@
+var canvas;
 var camera, scene, renderer;
 var geometry, material, mesh;
 
-init();
-animate();
+//init();
+//animate();
 
-function init() {
+function setup() {
+    canvas = createCanvas(window.innerWidth, window.innerHeight, 'p2d');
+    noStroke();
+}
+
+function draw(){
+    background(255);
+
+}
+
+window.addEventListener('load', function() {
     camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 0.01, 10 );
     camera.position.z = 1;
 
@@ -20,7 +31,8 @@ function init() {
     renderer.setSize( window.innerWidth, window.innerHeight );
     document.body.appendChild( renderer.domElement );
 
-}
+    animate();
+});
 
 function animate() {
 
