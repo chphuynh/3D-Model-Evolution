@@ -61,6 +61,10 @@ function animate() {
 
 }
 
+function mouseClicked() {
+    console.log(get(mouseX, mouseY));
+}
+
 function evaluateFitness() {
     loadPixels();
     let score = 0;
