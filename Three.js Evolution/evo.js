@@ -44,3 +44,7 @@ function animate() {
     renderer.render( scene, camera );
 
 }
+
+function mouseClicked() {
+    console.log(get(mouseX, mouseY));
+}
