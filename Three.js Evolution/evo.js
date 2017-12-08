@@ -7,19 +7,20 @@ var geometry, material, mesh;
 //animate();
 
 function preload(){
-    targetImage = loadImage("image.png");
-    canvas = document.createElement('canvas');
-    canvas.id = "the_canvas";
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-    canvas.style.position = "absolute";
+    // canvas = document.createElement('canvas');
+    // canvas.id = "the_canvas";
+    // canvas.width = window.innerWidth;
+    // canvas.height = window.innerHeight;
+    // canvas.style.position = "absolute";
 
-    document.body.appendChild(canvas);
-
-    targetImage.loadPixels();
+    // document.body.appendChild(canvas);
+    canvas = createCanvas(window.innerWidth, window.innerHeight/2);
+    canvas.parent("container");
+    targetImage = loadImage(ideal.src);
 }
 
 function setup() {
+    targetImage.loadPixels();
     noStroke();
 }
 
@@ -43,7 +44,7 @@ window.addEventListener('load', function() {
     mesh = new THREE.Mesh( geometry, material );
     scene.add( mesh );
 
-    renderer = new THREE.WebGLRenderer( { canvas: the_canvas, antialias: true } );
+    renderer = new THREE.WebGLRenderer( { canvas: canvas, antialias: true } );
     renderer.setSize( window.innerWidth, window.innerHeight );
     document.body.appendChild( renderer.domElement );
 
