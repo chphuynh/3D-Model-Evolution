@@ -1,18 +1,34 @@
 var canvas;
+var targetImage;
 var camera, scene, renderer;
 var geometry, material, mesh;
 
 //init();
 //animate();
 
+function preload(){
+    targetImage = loadImage("image.png");
+    canvas = document.createElement('canvas');
+    canvas.id = "the_canvas";
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    canvas.style.position = "absolute";
+
+    document.body.appendChild(canvas);
+
+    targetImage.loadPixels();
+}
+
 function setup() {
-    canvas = createCanvas(window.innerWidth, window.innerHeight, 'p2d');
     noStroke();
 }
 
 function draw(){
     background(255);
-
+    if(targetImage){
+        //console.log(pixels);
+        //console.log(evaluateFitness());
+    }
 }
 
 window.addEventListener('load', function() {
@@ -27,7 +43,7 @@ window.addEventListener('load', function() {
     mesh = new THREE.Mesh( geometry, material );
     scene.add( mesh );
 
-    renderer = new THREE.WebGLRenderer( { antialias: true } );
+    renderer = new THREE.WebGLRenderer( { canvas: the_canvas, antialias: true } );
     renderer.setSize( window.innerWidth, window.innerHeight );
     document.body.appendChild( renderer.domElement );
 
@@ -43,4 +59,14 @@ function animate() {
 
     renderer.render( scene, camera );
 
+}
+
+function evaluateFitness() {
+    loadPixels();
+    let score = 0;
+    for (let p = 0; p < pixels.length; p += 9) {
+        let diff = (pixels[p]-targetImage.pixels[p]);
+        score -= Math.abs(diff);
+    }
+    return score;
 }
