@@ -1,25 +1,23 @@
 var canvas;
+var body;
 var targetImage;
 var camera, scene, renderer;
 var geometry, material, mesh;
 
-//init();
-//animate();
-
-function preload(){
-    // canvas = document.createElement('canvas');
-    // canvas.id = "the_canvas";
-    // canvas.width = window.innerWidth;
-    // canvas.height = window.innerHeight;
-    // canvas.style.position = "absolute";
-
-    // document.body.appendChild(canvas);
-    canvas = createCanvas(window.innerWidth, window.innerHeight/2);
-    canvas.parent("container");
-    targetImage = loadImage(ideal.src);
-}
-
 function setup() {
+    canvas = createCanvas(window.innerWidth, window.innerHeight/2, "WEBGL");
+    
+    three_canvas = document.createElement("canvas");
+    three_canvas.id = "three_canvas";
+    three_canvas.width = window.innerWidth;
+    three_canvas.height = window.innerHeight;
+    three_canvas.style.position = "absolute";
+    
+    body = document.getElementById("body");
+    body.appendChild(three_canvas);
+    
+    targetImage = loadImage(ideal.src);
+
     targetImage.loadPixels();
     noStroke();
 }
@@ -30,6 +28,7 @@ function draw(){
         //console.log(pixels);
         //console.log(evaluateFitness());
     }
+    image(targetImage, 0, 0);
 }
 
 window.addEventListener('load', function() {
@@ -44,7 +43,7 @@ window.addEventListener('load', function() {
     mesh = new THREE.Mesh( geometry, material );
     scene.add( mesh );
 
-    renderer = new THREE.WebGLRenderer( { canvas: canvas, antialias: true } );
+    renderer = new THREE.WebGLRenderer( { canvas: three_canvas, antialias: true } );
     renderer.setSize( window.innerWidth, window.innerHeight );
     document.body.appendChild( renderer.domElement );
 
