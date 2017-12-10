@@ -8,6 +8,7 @@ let windowHeight = 400;
 
 const genesPerIndividual = 20;
 const paramsPerGene = 29;
+var childrenPerGeneration = 10;
 
 const mutationAmount = 0.001;
 
@@ -68,12 +69,44 @@ window.addEventListener('load', function() {
 function animate() {
     requestAnimationFrame( animate );
 
-    currentDesign = mutateDesign(currentDesign);
-    applyMutation(currentDesign);
-
     controls.update();
-
+    
     renderer.render( scene, camera );
+
+    evolve();
+}
+
+function evolve(){
+    let localScore = Number.NEGATIVE_INFINITY;
+    let localDesign = currentDesign;
+    //Generate childrenPerGeneration amount and choose best (random for now)
+    for(let g = 0; g < childrenPerGeneration; g++){
+        let child = mutateDesign(currentDesign);
+        //draw the design on p5js canvas to score
+        applyMutation(currentDesign);
+        let childScore = evaluateFitness();
+        if(childScore > localScore){
+            localDesign = child;
+            localScore = childScore;
+            console.log("New high score: " + localScore.toString())
+        }
+        currentDesign = localDesign;
+        currentScore = localScore;
+    }
+}
+
+function evaluateFitness(){
+    //returns a random number for now
+    let fitness = random();
+    
+    //loadPixels();
+    //let fitness = 0;
+    //for (let p = 0; p < pixels.length; p += 9) {
+    //    let diff = (pixels[p]-targetImage.pixels[p]);
+    //    score -= Math.abs(diff);
+    //}
+
+    return fitness;
 }
 
 function generateGenes() {
