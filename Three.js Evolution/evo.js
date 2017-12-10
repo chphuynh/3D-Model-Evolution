@@ -2,7 +2,6 @@ var p5_canvas;
 var threejs_canvas
 var camera, scene, renderer;
 var light;
-// var geometry, material, mesh;
 
 let windowWidth = 400;
 let windowHeight = 400;
@@ -15,8 +14,6 @@ const mutationAmount = 0.001;
 let meshArray = [];
 let currentDesign = [];
 
-//init();
-//animate();
 var image;
 
 function setup() {
@@ -27,13 +24,12 @@ function setup() {
     {
         p5_canvas.drawingContext.drawImage(image,0,0);
     }
-
-    //noStroke();
 }
 
 
 function draw(){
-    //background(0);
+    
+    // Snapshots three.js canvas to p5.ja canvas
     if(renderer)
         image.src = renderer.domElement.toDataURL();
 
@@ -44,7 +40,6 @@ let controls;
 window.addEventListener('load', function() {
     camera = new THREE.PerspectiveCamera( 70, windowWidth / windowHeight, 0.01, 10 );
     camera.position.z = 1;
-    //camera.lookAt(scene.position);
 
     scene = new THREE.Scene();
 
@@ -57,8 +52,6 @@ window.addEventListener('load', function() {
     currentDesign = generateGenes();
     generateMeshes();
     applyMutation(currentDesign);
-
-    //scene.add(mesh);
 
     controls = new THREE.TrackballControls(camera);
     controls.target.set(0,0,0);
@@ -88,17 +81,8 @@ function generateGenes() {
     let design = [];
     for(let i = 0; i < genesPerIndividual; i++)
     {
-        // design = design.concat([
-        //     0.1, 0.1, 0.1, 
-        //     0.1, 0.1, -0.1,
-        //     0.1, -0.1, 0.1,
-        //     0.1, -0.1, -0.1,
-        //     -0.1, 0.1, -0.1,
-        //     -0.1, 0.1, 0.1,
-        //     -0.1, -0.1, -0.1,
-        //     -0.1, -0.1, 0.1
-        // ]);
 
+        // Matrix for initial cube shape
         design = design.concat([
             0.55, 0.55, 0.55, 
             0.55, 0.55, 0.45,
@@ -115,8 +99,6 @@ function generateGenes() {
             design.push(random());
         }
 
-       // console.log(design);
-        // generateMeshes();
     }
 
     for(let i = 0; i < 3; i++)
@@ -160,12 +142,7 @@ function applyMutation(design){
     {
         for(var j = 0; j < meshArray[i].geometry.vertices.length; j++)
         {
-            // meshArray[i].geometry.vertices[j].x += random() * mutationAmount - mutationAmount/2;
-            // meshArray[i].geometry.vertices[j].y  += random() * mutationAmount - mutationAmount/2;
-            // meshArray[i].geometry.vertices[j].z  += random() * mutationAmount - mutationAmount/2;
-
             meshArray[i].geometry.vertices[j].x = design[i*paramsPerGene + j*3] * 2 - 1;
-            // console.log("Object " + i.toString() + ": Index " + (i*paramsPerGene + j*3).toString() + ": " + (design[i*paramsPerGene + j*3] * 2 - 1).toString())
             meshArray[i].geometry.vertices[j].y = design[i*paramsPerGene + j*3 + 1] * 2 - 1;
             meshArray[i].geometry.vertices[j].z = design[i*paramsPerGene + j*3 + 2] * 2 - 1;
         }
