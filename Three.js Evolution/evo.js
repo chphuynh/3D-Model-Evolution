@@ -1,5 +1,5 @@
 var p5_canvas;
-var threejs_canvas
+var threejs_canvas;
 var camera, scene, renderer;
 var light;
 
@@ -152,8 +152,8 @@ function evolve(){
 function drawDesign(design)
 {
     applyMutation(design);
-    canvasImage.src = renderer.domElement.toDataURL();
-    p5_canvas.drawingContext.drawImage(canvasImage,0,0);
+    //canvasImage.src = renderer.domElement.toDataURL();
+    p5_canvas.drawingContext.drawImage(threejs_canvas,0,0);
 }
 
 function evaluateFitness(){
