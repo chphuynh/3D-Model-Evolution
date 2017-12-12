@@ -3,37 +3,52 @@ var threejs_canvas
 var camera, scene, renderer;
 var light;
 
-let windowWidth = 400;
-let windowHeight = 400;
+let windowWidth = 178;
+let windowHeight = 200;
 
 const genesPerIndividual = 20;
 const paramsPerGene = 29;
-var childrenPerGeneration = 10;
+var childrenPerGeneration = 1;
 
 const mutationAmount = 0.001;
 
 let meshArray = [];
-let currentDesign = [];
+// remember the best design ever seen
+let bestDesign;
+let bestScore;
 
-var image;
+// remember the current design
+// (best of the most recent generation)
+let currentDesign;
+let currentScore;
+
+// store the image we are trying to recreate
+let targetImage;
+
+var canvasImage;
+
+function preload() {
+    targetImage = loadImage(ideal.src);
+
+}
 
 function setup() {
+    pixelDensity(1);
+
     p5_canvas = createCanvas(windowWidth, windowHeight, 'p2d');
 
-    image = new Image;
+    canvasImage = new Image;
     image.onload = function()
     {
-        p5_canvas.drawingContext.drawImage(image,0,0);
+        p5_canvas.drawingContext.drawImage(canvasImage,0,0);
     }
 }
 
-
 function draw(){
     
-    // Snapshots three.js canvas to p5.ja canvas
-    if(renderer)
-        image.src = renderer.domElement.toDataURL();
-
+    // // Snapshots three.js canvas to p5.ja canvas
+    // if(renderer)
+    //     canvasImage.src = renderer.domElement.toDataURL();
 }
 
 let controls;
@@ -44,27 +59,46 @@ window.addEventListener('load', function() {
 
     scene = new THREE.Scene();
 
+    // Lighting for scene
     scene.add( new THREE.AmbientLight( 0x0c0c0c) );
 
+    // Light to be mutated
     light = new THREE.PointLight( 0xffffff, 1, 100 );
     light.position.set( 25, 25, 25 );
     scene.add( light );
 
-    currentDesign = generateGenes();
-    generateMeshes();
-    applyMutation(currentDesign);
 
+    // Genetic Algorithm Setup
+    setupGenetics();
+
+    // Mouse Camera Movement
     controls = new THREE.TrackballControls(camera);
     controls.target.set(0,0,0);
 
-    threejs_canvas = document.getElementById("threejs");
 
+    // Three.js Canvas Setup
+    threejs_canvas = document.getElementById("threejs");
     renderer = new THREE.WebGLRenderer( {canvas: threejs_canvas, antialias: true, preserveDrawingBuffer: true } );
     renderer.setSize( windowWidth, windowHeight );
     document.body.appendChild( renderer.domElement );
 
+
+    // Three.js Update Function
     animate();
 });
+
+function setupGenetics()
+{
+    targetImage.loadPixels();
+
+    currentDesign = generateGenes();
+    bestDesign = currentDesign;
+
+    currentScore = Number.NEGATIVE_INFINITY;
+    bestScore = currentScore;
+    generateMeshes();
+    applyMutation(currentDesign);    
+}
 
 function animate() {
     requestAnimationFrame( animate );
@@ -73,7 +107,26 @@ function animate() {
     
     renderer.render( scene, camera );
 
+    if(p5_canvas)
+        iterate();
+}
+
+
+function iterate()
+{
     evolve();
+    if (currentScore > bestScore) {
+        console.log(    "global improvement",
+                currentScore);
+        bestDesign = currentDesign;
+        bestScore = currentScore;
+    }
+
+    if (keyIsDown(SHIFT)) {
+        drawDesign(currentDesign);
+    } else {
+        drawDesign(bestDesign);
+    }
 }
 
 function evolve(){
@@ -83,30 +136,37 @@ function evolve(){
     for(let g = 0; g < childrenPerGeneration; g++){
         let child = mutateDesign(currentDesign);
         //draw the design on p5js canvas to score
-        applyMutation(currentDesign);
+        drawDesign(child);
+
         let childScore = evaluateFitness();
+
         if(childScore > localScore){
             localDesign = child;
             localScore = childScore;
-            console.log("New high score: " + localScore.toString())
         }
         currentDesign = localDesign;
         currentScore = localScore;
     }
 }
 
-function evaluateFitness(){
-    //returns a random number for now
-    let fitness = random();
-    
-    //loadPixels();
-    //let fitness = 0;
-    //for (let p = 0; p < pixels.length; p += 9) {
-    //    let diff = (pixels[p]-targetImage.pixels[p]);
-    //    score -= Math.abs(diff);
-    //}
+function drawDesign(design)
+{
+    applyMutation(design);
+    canvasImage.src = renderer.domElement.toDataURL();
+    p5_canvas.drawingContext.drawImage(canvasImage,0,0);
+}
 
-    return fitness;
+function evaluateFitness(){
+    targetImage.loadPixels();
+    loadPixels();
+    let score = 0;
+
+    for (let p = 0; p < pixels.length; p += 9) {
+       let diff = (pixels[p]-targetImage.pixels[p]);
+       score -= Math.abs(diff);
+    }
+
+    return score;
 }
 
 function generateGenes() {
@@ -191,9 +251,9 @@ function applyMutation(design){
         meshArray[i].geometry.computeFaceNormals();
     }
 
-    light.position.x = Math.sin(design[design.length-3]) * 2;
-    light.position.y = Math.cos(design[design.length-2]) * 2;
-    light.position.z = Math.cos(design[design.length-1]) * 2;
+    light.position.x = Math.sin(design[design.length-3]) * 5;
+    light.position.y = Math.cos(design[design.length-2]) * 5;
+    light.position.z = Math.cos(design[design.length-1]) * 5;
 }
 
 function mouseClicked() {
