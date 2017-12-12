@@ -14,8 +14,9 @@ const mutationAmount = 0.001;
 
 let meshArray = [];
 let currentDesign = [];
+let currentScore;
 
-var image;
+var image, targetImage;
 
 function setup() {
     p5_canvas = createCanvas(windowWidth, windowHeight, 'p2d');
@@ -25,6 +26,9 @@ function setup() {
     {
         p5_canvas.drawingContext.drawImage(image,0,0);
     }
+    targetImage = loadImage("target_1.png");  //Target image here
+    targetImage.loadPixels();
+    currentScore = Number.NEGATIVE_INFINITY;
 }
 
 
@@ -97,15 +101,14 @@ function evolve(){
 
 function evaluateFitness(){
     //returns a random number for now
-    let fitness = random();
+    //let fitness = random();  //Keep in case we want to get out of local maxima?
     
-    //loadPixels();
-    //let fitness = 0;
-    //for (let p = 0; p < pixels.length; p += 9) {
-    //    let diff = (pixels[p]-targetImage.pixels[p]);
-    //    score -= Math.abs(diff);
-    //}
-
+    loadPixels();
+    let fitness = 0;
+    for (let p = 0; p < pixels.length; p += 9) {
+       let diff = (pixels[p]-targetImage.pixels[p]);
+       fitness -= Math.abs(diff);
+    }
     return fitness;
 }
 
