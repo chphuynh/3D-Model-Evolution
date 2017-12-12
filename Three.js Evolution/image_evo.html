@@ -10,17 +10,22 @@
 	margin: 0;
 	padding: 0;
 }  
-/*
-canvas {
+
+#threejs, #defaultCanvas0 {
 	position: absolute;
-}*/
+	float:right;
+}
 
 </style>
 
 <body>
-	
+	<div>
+		<h1>Source Image: <span style="display:inline-block; width:100px"></span>Best Generation: <span style="display:inline-block; width:60px"></span> Current Generation:</h1>
+	</div>
+	<img id="ideal" src="steve-jobs.jpg"/>
+	<img id="best"/>
+	<span style="display:inline-block; width:1px">
 	<script src="evo.js"></script>
 	<canvas id="threejs"></canvas>
-	<img id="ideal" src="steve-jobs.jpg"/>
 </body>
 </html>

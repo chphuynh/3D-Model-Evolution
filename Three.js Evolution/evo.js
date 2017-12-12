@@ -3,8 +3,8 @@ var threejs_canvas;
 var camera, scene, renderer;
 var light;
 
-let windowWidth = 178;
-let windowHeight = 200;
+let windowWidth = 300;
+let windowHeight = 300;
 
 const genesPerIndividual = 10;
 const paramsPerGene = 29;
@@ -27,6 +27,8 @@ let targetImage;
 
 var canvasImage;
 
+var bestCanvas;
+
 function preload() {
     targetImage = loadImage(ideal.src);
 
@@ -37,11 +39,12 @@ function setup() {
 
     p5_canvas = createCanvas(windowWidth, windowHeight, 'p2d');
 
-    canvasImage = new Image;
-    image.onload = function()
-    {
-        p5_canvas.drawingContext.drawImage(canvasImage,0,0);
-    }
+    canvasImage = document.getElementById("best");
+    // canvasImage = new Image;
+    // image.onload = function()
+    // {
+    //     p5_canvas.drawingContext.drawImage(canvasImage,0,0);
+    // }
 }
 
 function draw(){
@@ -56,6 +59,7 @@ let controls;
 window.addEventListener('load', function() {
     camera = new THREE.PerspectiveCamera( 70, windowWidth / windowHeight, 0.01, 10 );
     camera.position.z = 1;
+    camera.position.x = 1.2;
 
     scene = new THREE.Scene();
 
@@ -81,7 +85,6 @@ window.addEventListener('load', function() {
     renderer = new THREE.WebGLRenderer( {canvas: threejs_canvas, antialias: true, preserveDrawingBuffer: true } );
     renderer.setSize( windowWidth, windowHeight );
     document.body.appendChild( renderer.domElement );
-
 
     // Three.js Update Function
     animate();
@@ -120,13 +123,16 @@ function iterate()
                 currentScore);
         bestDesign = currentDesign;
         bestScore = currentScore;
+        canvasImage.src = renderer.domElement.toDataURL();
     }
 
-    if (keyIsDown(SHIFT)) {
-        drawDesign(currentDesign);
-    } else {
-        drawDesign(bestDesign);
-    }
+    drawDesign(currentDesign);
+
+    // if (keyIsDown(SHIFT)) {
+    //     drawDesign(currentDesign);
+    // } else {
+    //     drawDesign(bestDesign);
+    // }
 }
 
 function evolve(){
@@ -251,11 +257,11 @@ function applyMutation(design){
         meshArray[i].geometry.computeFaceNormals();
     }
 
-    light.position.x = Math.sin(design[design.length-3]) * 5;
-    light.position.y = Math.cos(design[design.length-2]) * 5;
-    light.position.z = Math.cos(design[design.length-1]) * 5;
+    light.position.x = Math.sin(design[design.length-3] * 3) * 5;
+    light.position.y = Math.cos(design[design.length-2] * 3) * 5;
+    light.position.z = Math.cos(design[design.length-1] * 3) * 5;
 }
 
-function mouseClicked() {
-    console.log(get(mouseX, mouseY));
-}
+// function mouseClicked() {
+//     console.log(get(mouseX, mouseY));
+// }
