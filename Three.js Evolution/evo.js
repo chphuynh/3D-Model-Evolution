@@ -6,7 +6,7 @@ var light;
 let windowWidth = 178;
 let windowHeight = 200;
 
-const genesPerIndividual = 20;
+const genesPerIndividual = 10;
 const paramsPerGene = 29;
 var childrenPerGeneration = 1;
 
@@ -240,9 +240,9 @@ function applyMutation(design){
             meshArray[i].geometry.vertices[j].z = design[i*paramsPerGene + j*3 + 2] * 2 - 1;
         }
 
-        meshArray[i].position.x = design[i*paramsPerGene + 24]-0.5;
-        meshArray[i].position.y = design[i*paramsPerGene + 25]-0.5;
-        meshArray[i].position.z = design[i*paramsPerGene + 26] - 0.75;
+        meshArray[i].position.x = design[i*paramsPerGene + 24]-0.25;
+        meshArray[i].position.y = design[i*paramsPerGene + 25]-0.25;
+        meshArray[i].position.z = design[i*paramsPerGene + 26] - 0.5;
 
         meshArray[i].rotation.x = design[i*paramsPerGene + 27];
         meshArray[i].rotation.y = design[i*paramsPerGene + 28];
