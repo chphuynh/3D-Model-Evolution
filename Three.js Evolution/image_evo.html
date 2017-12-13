@@ -13,19 +13,80 @@
 
 #threejs, #defaultCanvas0 {
 	position: absolute;
-	float:right;
+}
+
+#tempDiv {
+	overflow: hidden;
+	position: relative;
+}
+
+#temp {
+	position: absolute;
+	right: -100px;
+}
+
+#up {
+    background-color: white;
+    width: 80%;
+    padding: 10px;
+    padding-left: 20px;
+    margin: 10px;
+}
+
+#down {
+	position: absolute;
+    background-color: white;
+    width: 80%;
+    height: 350px;
+    padding: 10px;
+    padding-left: 20px;
+    margin: 10px;
+    top:105px;
+    left: 0px;
+    z-index: -100;
 }
 
 </style>
 
-<body>
-	<div>
-		<h1>Source Image: <span style="display:inline-block; width:100px"></span>Best Generation: <span style="display:inline-block; width:60px"></span> Current Generation:</h1>
+<body background="bg.jpg">
+	<div id="up">
+		<h1> Upload Image </h1><br>
+		<form>
+			<input type="file" onchange="previewFile()">
+			<script>
+				function previewFile() {
+					var preview = document.querySelector('#ideal');
+					var file = document.querySelector('input[type=file]').files[0];
+					var reader = new FileReader();
+
+					console.log("previewFile()");
+
+					reader.addEventListener("load", function () {
+						preview.src = reader.result;
+					}, false);
+
+					if (file) {
+						reader.readAsDataURL(file);
+					}
+				}
+			</script>
+			<span style="display:inline-block; width:50px"></span>
+			<input id="clickMe" type="button" value="Generate Genes" onclick="setupGenetics();" />
+		</form>
+
+		<div id="tempDiv">
+			<canvas id="temp" width="300" height="300"></canvas>
+		</div>
+		<div id="down"></div>
 	</div>
-	<img id="ideal" src="steve-jobs.jpg"/>
+	<h1><span style="display:inline-block; width:25px"></span>Source Image: <span style="display:inline-block; width:155px"></span>Best Generation: <span style="display:inline-block; width:110px"></span> Current Generation:</h1>
+	<span style="display:inline-block; width:25px"></span>
+	<img id="ideal" src="steve-jobs.jpg" width="300" height="300"/>
+	<span style="display:inline-block; width:50px"></span>
 	<img id="best"/>
-	<span style="display:inline-block; width:1px">
+	<span style="display:inline-block; width:51px"></span>
 	<script src="evo.js"></script>
 	<canvas id="threejs"></canvas>
+
 </body>
 </html>

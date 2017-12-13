@@ -29,6 +29,9 @@ var canvasImage;
 
 var bestCanvas;
 
+var currentSrc = ideal.src;
+
+
 function preload() {
     targetImage = loadImage(ideal.src);
 
@@ -38,7 +41,7 @@ function setup() {
     pixelDensity(1);
 
     p5_canvas = createCanvas(windowWidth, windowHeight, 'p2d');
-
+    // p5_canvas.parent(document.getElementById("down"))
     canvasImage = document.getElementById("best");
     // canvasImage = new Image;
     // image.onload = function()
@@ -112,6 +115,12 @@ function animate() {
 
     if(p5_canvas)
         iterate();
+
+    if(ideal.src != currentSrc)
+    {
+        blackWhite();
+        setupGenetics();
+    }
 }
 
 
@@ -220,7 +229,6 @@ function generateMeshes() {
     }
 }
 
-
 function mutateDesign(design)
 {
     let mutant = design.slice();
@@ -265,3 +273,32 @@ function applyMutation(design){
 // function mouseClicked() {
 //     console.log(get(mouseX, mouseY));
 // }
+
+function blackWhite()
+{
+    var tempCanvas = document.getElementById("temp");
+    var tempCtx = tempCanvas.getContext('2d');
+    var tempImg = new Image;
+    tempImg.src = ideal.src;
+    tempCtx.drawImage(tempImg, 0, 0, 300, 300);
+
+    var imgData = tempCtx.getImageData(0,0,300,300);
+
+    for (var i = 0; i < 300*300*4; i+= 4)
+    {
+     var redValue = imgData.data[i];
+     var greenValue = imgData.data[i+1];
+     var blueValue = imgData.data[i+2];
+
+     var greyValue = parseInt((redValue + greenValue + blueValue) / 3);
+
+     imgData.data[i] = greyValue;
+     imgData.data[i+1] = greyValue;
+     imgData.data[i+2] = greyValue;
+    }
+
+    tempCtx.putImageData(imgData,0,0);
+
+    ideal.src = tempCanvas.toDataURL();
+    currentSrc = ideal.src;
+}
