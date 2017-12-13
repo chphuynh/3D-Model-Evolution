@@ -10,7 +10,7 @@ var genesPerIndividual = 10;
 var paramsPerGene = 29;
 var childrenPerGeneration = 1;
 
-const mutationAmount = 0.001;
+const mutationAmount = 0.002;
 
 let meshArray = [];
 // remember the best design ever seen
@@ -265,9 +265,9 @@ function applyMutation(design){
             meshArray[i].geometry.vertices[j].z = design[i*paramsPerGene + j*3 + 2] * 2 - 1;
         }
 
-        meshArray[i].position.x = design[i*paramsPerGene + 24]-0.25;
-        meshArray[i].position.y = design[i*paramsPerGene + 25]-0.25;
-        meshArray[i].position.z = design[i*paramsPerGene + 26] - 0.5;
+        meshArray[i].position.x = design[i*paramsPerGene + 24]*2-1.5;
+        meshArray[i].position.y = design[i*paramsPerGene + 25]*2-1;
+        meshArray[i].position.z = design[i*paramsPerGene + 26] - 0.75;
 
         meshArray[i].rotation.x = design[i*paramsPerGene + 27];
         meshArray[i].rotation.y = design[i*paramsPerGene + 28];
