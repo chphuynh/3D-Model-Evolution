@@ -23,11 +23,16 @@ let currentDesign;
 let currentScore;
 
 // store the image we are trying to recreate
-let targetImage;
+var targetImage;
 
 var canvasImage;
 
 var bestCanvas;
+
+//Max num iterations since last best mutation was found
+var resetCount = 100;
+//Keep track of iterations since last best mutation
+var genCount = 0;
 
 function preload() {
     targetImage = loadImage(ideal.src);
@@ -40,18 +45,10 @@ function setup() {
     p5_canvas = createCanvas(windowWidth, windowHeight, 'p2d');
 
     canvasImage = document.getElementById("best");
-    // canvasImage = new Image;
-    // image.onload = function()
-    // {
-    //     p5_canvas.drawingContext.drawImage(canvasImage,0,0);
-    // }
 }
 
 function draw(){
-    
-    // // Snapshots three.js canvas to p5.ja canvas
-    // if(renderer)
-    //     canvasImage.src = renderer.domElement.toDataURL();
+
 }
 
 let controls;
@@ -126,13 +123,17 @@ function iterate()
         canvasImage.src = renderer.domElement.toDataURL();
     }
 
-    drawDesign(currentDesign);
+    if (genCount > resetCount){
+        //Reset to last best mutation
+        currentDesign = bestDesign;
+        currentScore = bestScore;
+        console.log("reset!");
+        genCount = 0;
+    }else{
+        genCount++;
+    }
 
-    // if (keyIsDown(SHIFT)) {
-    //     drawDesign(currentDesign);
-    // } else {
-    //     drawDesign(bestDesign);
-    // }
+    drawDesign(currentDesign);
 }
 
 function evolve(){
@@ -158,7 +159,6 @@ function evolve(){
 function drawDesign(design)
 {
     applyMutation(design);
-    //canvasImage.src = renderer.domElement.toDataURL();
     p5_canvas.drawingContext.drawImage(threejs_canvas,0,0);
 }
 
@@ -175,34 +175,44 @@ function evaluateFitness(){
     return score;
 }
 
+function bundle(){
+    this.cubes = [];
+    this.others = [];
+    this.light = [];
+}
+
 function generateGenes() {
 
-    let design = [];
+    let design = new bundle();
+
     for(let i = 0; i < genesPerIndividual; i++)
     {
-
         // Matrix for initial cube shape
-        design = design.concat([
-            0.55, 0.55, 0.55, 
-            0.55, 0.55, 0.45,
-            0.55, 0.45, 0.55,
-            0.55, 0.45, 0.45,
-            0.45, 0.55, 0.45,
-            0.45, 0.55, 0.55,
-            0.45, 0.45, 0.45,
-            0.45, 0.45, 0.55
-        ]);
-
+        let cube = [
+            0.55, 0.55, 0.55, //a
+            0.55, 0.55, 0.45, //b
+            0.55, 0.45, 0.55, //c
+            0.55, 0.45, 0.45, //d
+            0.45, 0.55, 0.45, //e
+            0.45, 0.55, 0.55, //f
+            0.45, 0.45, 0.45, //g
+            0.45, 0.45, 0.55  //h
+        ];
+        //The rest (24 - 29) are used for other values
+        let other = [];
         for(let j = 24; j < paramsPerGene; j++)
         {
-            design.push(random());
+            other.push(random());
         }
-
+        
+        //Group up cube values
+        design.cubes.push(cube);
+        design.others.push(other);
     }
 
     for(let i = 0; i < 3; i++)
     {
-        design.push(random());
+        design.light.push(random());
     }
 
     return design;
@@ -220,48 +230,70 @@ function generateMeshes() {
     }
 }
 
+function constrainVertices(){
+
+}
 
 function mutateDesign(design)
 {
-    let mutant = design.slice();
+    var mutant = design;
 
-    for (let i = 0; i < mutant.length; i++) {
-        mutant[i] = constrain(
-        mutant[i] +
-        randomGaussian(0,mutationAmount),
-        0,
-        1);
+    //Mutate each verex coordinates
+    for(let i = 0; i < mutant.cubes.length; i++){
+        for(j = 0; j < mutant.cubes[i].length; j++){
+            mutant.cubes[i][j] = constrain(
+                (mutant.cubes[i][j] +
+                randomGaussian(0,mutationAmount)),
+                0,
+                1);
+        }
+    }
+
+    //Mutate other attributes
+    for(let i = 0; i < mutant.others.length; i++){
+        for(j = 0; j < mutant.others[i].length; j++){
+            mutant.others[i][j] = constrain(
+                (mutant.others[i][j] +
+                randomGaussian(0,mutationAmount)),
+                0,
+                1);
+        }
+    }
+
+    //Mutate light attributes
+    for(let i = 0; i < mutant.light.length; i++){
+        mutant.light[i] = constrain(
+            mutant.light[i] +
+            randomGaussian(0,mutationAmount),
+            0,
+            1);
     }
 
     return mutant;
 }
 
 function applyMutation(design){
-    for(var i = 0; i < meshArray.length; i++)
+    for(let i = 0; i < meshArray.length; i++)
     {
-        for(var j = 0; j < meshArray[i].geometry.vertices.length; j++)
+        for(let j = 0; j < meshArray[i].geometry.vertices.length; j++)
         {
-            meshArray[i].geometry.vertices[j].x = design[i*paramsPerGene + j*3] * 2 - 1;
-            meshArray[i].geometry.vertices[j].y = design[i*paramsPerGene + j*3 + 1] * 2 - 1;
-            meshArray[i].geometry.vertices[j].z = design[i*paramsPerGene + j*3 + 2] * 2 - 1;
+            meshArray[i].geometry.vertices[j].x = design.cubes[i][j*3] * 2 - 1;
+            meshArray[i].geometry.vertices[j].y = design.cubes[i][j*3+1] * 2 - 1;
+            meshArray[i].geometry.vertices[j].z = design.cubes[i][j*3+2] * 2 - 1;
         }
 
-        meshArray[i].position.x = design[i*paramsPerGene + 24]-0.25;
-        meshArray[i].position.y = design[i*paramsPerGene + 25]-0.25;
-        meshArray[i].position.z = design[i*paramsPerGene + 26] - 0.5;
+        meshArray[i].position.x = design.others[i][0];
+        meshArray[i].position.y = design.others[i][1];
+        meshArray[i].position.z = design.others[i][2];
 
-        meshArray[i].rotation.x = design[i*paramsPerGene + 27];
-        meshArray[i].rotation.y = design[i*paramsPerGene + 28];
+        meshArray[i].rotation.x = design.others[i][3];
+        meshArray[i].rotation.y = design.others[i][4];
         meshArray[i].geometry.center();
         meshArray[i].geometry.verticesNeedUpdate = true;
         meshArray[i].geometry.computeFaceNormals();
     }
 
-    light.position.x = Math.sin(design[design.length-3] * 3) * 5;
-    light.position.y = Math.cos(design[design.length-2] * 3) * 5;
-    light.position.z = Math.cos(design[design.length-1] * 3) * 5;
+    light.position.x = Math.sin(design.light[0] * 3) * 5;
+    light.position.y = Math.cos(design.light[1] * 3) * 5;
+    light.position.z = Math.cos(design.light[2] * 3) * 5;
 }
-
-// function mouseClicked() {
-//     console.log(get(mouseX, mouseY));
-// }
