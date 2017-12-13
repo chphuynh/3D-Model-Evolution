@@ -23,7 +23,12 @@ let currentDesign;
 let currentScore;
 
 // store the image we are trying to recreate
-let targetImage;
+var targetImage;
+
+//Max num iterations since last best mutation was found
+var resetCount = 300;
+//Keep track of iterations since last best mutation
+var genCount = 0;
 
 var canvasImage;
 
@@ -41,20 +46,10 @@ function setup() {
     pixelDensity(1);
 
     p5_canvas = createCanvas(windowWidth, windowHeight, 'p2d');
-    // p5_canvas.parent(document.getElementById("down"))
     canvasImage = document.getElementById("best");
-    // canvasImage = new Image;
-    // image.onload = function()
-    // {
-    //     p5_canvas.drawingContext.drawImage(canvasImage,0,0);
-    // }
 }
 
 function draw(){
-    
-    // // Snapshots three.js canvas to p5.ja canvas
-    // if(renderer)
-    //     canvasImage.src = renderer.domElement.toDataURL();
 }
 
 let controls;
@@ -142,13 +137,17 @@ function iterate()
         canvasImage.src = renderer.domElement.toDataURL();
     }
 
-    drawDesign(currentDesign);
+    if (genCount > resetCount){
+        //Reset to last best mutation
+        currentDesign = bestDesign;
+        currentScore = bestScore;
+        console.log("reset!");
+        genCount = 0;
+    }else{
+        genCount++;
+    }
 
-    // if (keyIsDown(SHIFT)) {
-    //     drawDesign(currentDesign);
-    // } else {
-    //     drawDesign(bestDesign);
-    // }
+    drawDesign(currentDesign);
 }
 
 function evolve(){
@@ -174,7 +173,6 @@ function evolve(){
 function drawDesign(design)
 {
     applyMutation(design);
-    //canvasImage.src = renderer.domElement.toDataURL();
     p5_canvas.drawingContext.drawImage(threejs_canvas,0,0);
 }
 
@@ -189,6 +187,12 @@ function evaluateFitness(){
     }
 
     return score;
+}
+
+function bundle(){
+    this.cubes = [];
+    this.others = [];
+    this.light = [];
 }
 
 function generateGenes() {
