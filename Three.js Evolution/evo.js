@@ -30,7 +30,7 @@ var canvasImage;
 var bestCanvas;
 
 //Max num iterations since last best mutation was found
-var resetCount = 100;
+var resetCount = 300;
 //Keep track of iterations since last best mutation
 var genCount = 0;
 
@@ -240,14 +240,43 @@ function mutateDesign(design)
 
     //Mutate each verex coordinates
     for(let i = 0; i < mutant.cubes.length; i++){
-        for(j = 0; j < mutant.cubes[i].length; j++){
-            mutant.cubes[i][j] = constrain(
-                (mutant.cubes[i][j] +
-                randomGaussian(0,mutationAmount)),
-                0,
-                1);
-        }
+        mutant.cubes[i][0] = constrain(mutant.cubes[i][0] + randomGaussian(0, mutationAmount), 0, 1); //A
+        mutant.cubes[i][1] = constrain(mutant.cubes[i][1] + randomGaussian(0, mutationAmount), 0, 1);
+        mutant.cubes[i][2] = constrain(mutant.cubes[i][2] + randomGaussian(0, mutationAmount), 0, 1);
+        mutant.cubes[i][3] = constrain(mutant.cubes[i][3] + randomGaussian(0, mutationAmount), 0, 1); //B
+        mutant.cubes[i][4] = constrain(mutant.cubes[i][4] + randomGaussian(0, mutationAmount), 0, 1);
+        mutant.cubes[i][5] = constrain(mutant.cubes[i][5] + randomGaussian(0,mutationAmount), -1, 0);
+        mutant.cubes[i][6] = constrain(mutant.cubes[i][6] + randomGaussian(0, mutationAmount), 0, 1); //C
+        mutant.cubes[i][7] = constrain(mutant.cubes[i][7] + randomGaussian(0, mutationAmount), -1, 0);
+        mutant.cubes[i][8] = constrain(mutant.cubes[i][8] + randomGaussian(0, mutationAmount), 0, 1);
+        mutant.cubes[i][9] = constrain(mutant.cubes[i][9] + randomGaussian(0, mutationAmount), 0, 1); //D
+        mutant.cubes[i][10] = constrain(mutant.cubes[i][10] + randomGaussian(0, mutationAmount), -1, 0);
+        mutant.cubes[i][11] = constrain(mutant.cubes[i][11] + randomGaussian(0, mutationAmount), -1, 0);
+        mutant.cubes[i][12] = constrain(mutant.cubes[i][12] + randomGaussian(0, mutationAmount), -1, 0); //E
+        mutant.cubes[i][13] = constrain(mutant.cubes[i][13] + randomGaussian(0, mutationAmount), 0, 1);
+        mutant.cubes[i][14] = constrain(mutant.cubes[i][14] + randomGaussian(0, mutationAmount), 0, 1);
+        mutant.cubes[i][15] = constrain(mutant.cubes[i][15] + randomGaussian(0, mutationAmount), -1, 0); //F
+        mutant.cubes[i][16] = constrain(mutant.cubes[i][16] + randomGaussian(0, mutationAmount), 0, 1);
+        mutant.cubes[i][17] = constrain(mutant.cubes[i][17] + randomGaussian(0, mutationAmount), -1, 0);
+        mutant.cubes[i][18] = constrain(mutant.cubes[i][18] + randomGaussian(0, mutationAmount), -1, 0); //G
+        mutant.cubes[i][19] = constrain(mutant.cubes[i][19] + randomGaussian(0, mutationAmount), -1, 0);
+        mutant.cubes[i][20] = constrain(mutant.cubes[i][20] + randomGaussian(0, mutationAmount), 0, 1);
+        mutant.cubes[i][21] = constrain(mutant.cubes[i][21] + randomGaussian(0, mutationAmount), -1, 0); //H
+        mutant.cubes[i][22] = constrain(mutant.cubes[i][22] + randomGaussian(0, mutationAmount), -1, 0);
+        mutant.cubes[i][23] = constrain(mutant.cubes[i][23] + randomGaussian(0, mutationAmount), -1, 0);
     }
+
+    //Unconstrained cube vertices
+    // for(let i = 0; i < mutant.cubes.length; i++){
+    //     for(j = 0; j < mutant.cubes[i].length; j++){
+    //         mutant.cubes[i][j] = constrain(
+    //             (mutant.cubes[i][j] +
+    //             randomGaussian(0,mutationAmount)),
+    //             0,
+    //             1);
+    //     }
+    // }
+    
 
     //Mutate other attributes
     for(let i = 0; i < mutant.others.length; i++){
@@ -277,9 +306,9 @@ function applyMutation(design){
     {
         for(let j = 0; j < meshArray[i].geometry.vertices.length; j++)
         {
-            meshArray[i].geometry.vertices[j].x = design.cubes[i][j*3] * 2 - 1;
-            meshArray[i].geometry.vertices[j].y = design.cubes[i][j*3+1] * 2 - 1;
-            meshArray[i].geometry.vertices[j].z = design.cubes[i][j*3+2] * 2 - 1;
+            meshArray[i].geometry.vertices[j].x = design.cubes[i][j*3]*2-1;
+            meshArray[i].geometry.vertices[j].y = design.cubes[i][j*3+1]*2-1;
+            meshArray[i].geometry.vertices[j].z = design.cubes[i][j*3+2]*2-1;
         }
 
         meshArray[i].position.x = design.others[i][0];
