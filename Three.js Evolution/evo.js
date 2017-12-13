@@ -6,8 +6,8 @@ var light;
 let windowWidth = 300;
 let windowHeight = 300;
 
-const genesPerIndividual = 10;
-const paramsPerGene = 29;
+var genesPerIndividual = 10;
+var paramsPerGene = 29;
 var childrenPerGeneration = 1;
 
 const mutationAmount = 0.001;
@@ -92,6 +92,13 @@ window.addEventListener('load', function() {
     // Three.js Update Function
     animate();
 });
+
+
+function modifyCubes(num)
+{
+    genesPerIndividual += num;
+    setupGenetics();
+}
 
 function setupGenetics()
 {
